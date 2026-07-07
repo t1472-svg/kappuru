@@ -2,11 +2,14 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>おきなわ、何食べる？</title>
+    <!-- ⚡️ Supabaseライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* 極限まで淡くしたミルキーなパステルグラデーション */
         body {
             font-family: "Hiragino Maru Gothic ProN", "Noto Sans JP", "Ubuntu", sans-serif;
             text-align: center;
@@ -16,8 +19,6 @@
             padding: 20px 10px;
             margin: 0;
         }
-        
-        /* メインの白いカード（透明感のある白） */
         .container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -27,16 +28,25 @@
             border-radius: 30px;
             box-shadow: 0 10px 30px rgba(255, 183, 202, 0.15);
             border: 2px solid #ffffff;
+            position: relative;
         }
-        
+        .version-tag {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 11px;
+            color: #cbd5e1;
+            font-weight: bold;
+            background: #f8fafc;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
         h1 { 
             font-size: 21px; 
-            color: #ff9ebb; /* 優しいパステルピンク */
-            margin-top: 0;
+            color: #ff9ebb;
+            margin-top: 10px;
             text-shadow: 1px 1px 0px #fff;
         }
-        
-        /* チェーン店モードのスイッチ（マイルドなクリーム色） */
         .chain-toggle-box {
             background: #fffbeb;
             padding: 12px;
@@ -63,18 +73,17 @@
         input:checked + .slider { background-color: #ffb7ca; }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* セクション・フォーム */
         .section-title {
             font-size: 14px;
             font-weight: bold;
-            color: #7dd3fc; /* 淡いパステルブルー */
+            color: #7dd3fc;
             text-align: left;
             margin: 25px 0 10px 0;
             padding-left: 6px;
             border-left: 4px solid #7dd3fc;
         }
         .filter-section, .add-section {
-            background: #fffafb; /* ほんのり優しい白ピンク */
+            background: #fffafb;
             padding: 15px;
             border-radius: 20px;
             text-align: left;
@@ -84,7 +93,6 @@
         .filter-group:last-child { margin-bottom: 0; }
         label { display: block; font-size: 13px; font-weight: bold; color: #94a3b8; margin-bottom: 6px; }
         
-        /* 入力欄や選択ボックス */
         select, input[type="text"] {
             width: 100%; padding: 12px; font-size: 15px; border: 2px solid #f1f5f9;
             border-radius: 15px; background-color: white; box-sizing: border-box;
@@ -93,7 +101,6 @@
         }
         select:focus, input[type="text"]:focus { border-color: #7dd3fc; outline: none; }
 
-        /* 複数選択チェックボックスのスタイル */
         .checkbox-group {
             display: flex;
             gap: 12px;
@@ -111,8 +118,6 @@
             cursor: pointer;
             margin-bottom: 0;
         }
-
-        /* 結果表示（いちばんマイルドで可愛いグラデーション） */
         .result-box {
             background: linear-gradient(135deg, #f0f9ff 0%, #fff1f2 100%);
             border-radius: 24px; padding: 25px 20px; margin: 15px 0;
@@ -122,17 +127,13 @@
         #result-name { font-size: 28px; font-weight: bold; color: #ff9ebb; text-shadow: 1px 1px 0 #fff; }
         #result-meta { font-size: 13px; color: #94a3b8; margin-top: 8px; font-weight: bold; }
 
-        /* ボタン（ぷるんとした淡いパステルピンクのグラデーション） */
         .btn-main {
             background: linear-gradient(135deg, #ffb7ca, #ffa6c5); color: white; border: none;
             width: 100%; padding: 16px; font-size: 18px; font-weight: bold; border-radius: 30px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(255, 183, 202, 0.4); transition: transform 0.1s;
             font-family: inherit;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
         }
         .btn-main:active { transform: scale(0.97); }
-        
-        /* 追加ボタン（淡いパステルブルー） */
         .btn-add { 
             background: linear-gradient(135deg, #bae6fd, #7dd3fc); 
             padding: 12px; font-size: 15px; margin-top: 10px; 
@@ -142,22 +143,22 @@
         }
         .btn-add:active { transform: scale(0.97); }
 
-        /* リスト管理 */
         .shop-list { max-height: 250px; overflow-y: auto; background: #fff; border: 1px solid #f8fafc; border-radius: 20px; padding: 10px; margin-top: 10px; }
         .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 6px; border-bottom: 1px solid #f8fafc; font-size: 14px; text-align: left; }
         .shop-item:last-child { border-bottom: none; }
         .shop-info { flex-grow: 1; padding-right: 10px; }
         .shop-buttons { display: flex; gap: 6px; }
-        
-        /* リストの小さなボタン */
         .action-btn { border: none; padding: 6px 12px; font-size: 12px; border-radius: 20px; cursor: pointer; color: white; font-weight: bold; font-family: inherit; }
-        .btn-status-toggle { background: #bae6fd; color: #0369a1; box-shadow: 0 2px 6px rgba(186, 230, 253, 0.3); }
+        .btn-status-toggle { background: #bae6fd; color: #0369a1; }
         .btn-delete { background: #cbd5e1; color: #64748b; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- ⚡️ バージョン更新 -->
+    <div class="version-tag">ver 1.2</div>
+
     <h1>ふたりの沖縄ごはんルーレット</h1>
     
     <div class="chain-toggle-box">
@@ -197,9 +198,9 @@
             <label>🍱 ジャンル</label>
             <select id="genre-select">
                 <option value="すべて">なんでも</option>
-                <option value="ごはん">ごはん（定食・丼もの）</option>
-                <option value="麺">麺（沖縄そば・ラーメン）</option>
-                <option value="パン・軽食">パン・軽食（バーガー等）</option>
+                <option value="ごはん">ごはん</option>
+                <option value="麺">麺</option>
+                <option value="パン・軽食">パン・軽食</option>
                 <option value="その他">その他</option>
             </select>
         </div>
@@ -258,19 +259,16 @@
 </div>
 
 <script>
-    // ⚡️ Supabaseの初期化設定
     const SUPABASE_URL = "https://lunmckpbtdcdlrcvhrog.supabase.co";
     const SUPABASE_KEY = "sb_publishable_Ft2zusAtDbD4UrjXGuhUsQ_xoS5vEqy";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let gourmetDatabase = [];
 
-    // アプリ起動時の初期設定
     async function initApp() {
         await fetchShops();
         renderShopList();
 
-        // ⚡️ リアルタイム同期の開始
         _supabase
             .channel('public:okinawa_places')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'okinawa_places' }, async () => {
@@ -280,12 +278,12 @@
             .subscribe();
     }
 
-    // データベースからリストを取得
+    // ⚡️ どんなデータが入っていても絶対に途中で止まらないように超安全設計に修正
     async function fetchShops() {
         const { data, error } = await _supabase
             .from('okinawa_places')
             .select('*')
-            .order('created_at', { ascending: false }); // 新しい順に並べる
+            .order('created_at', { ascending: false });
         
         if (error) {
             console.error("データ取得エラー:", error);
@@ -293,25 +291,33 @@
         }
 
         gourmetDatabase = data.map(item => {
-            let info = { area: "南部", time: "昼", genre: "ごはん", status: "行きたい", isChain: false };
-            try {
-                if (item.notes) info = JSON.parse(item.notes);
-            } catch(e) { console.error(e); }
+            let info = { area: "南部", time: ["昼"], genre: "ごはん", status: "行きたい", isChain: false };
+            
+            // JSONの復元に失敗しても初期値でカバーする
+            if (item.notes) {
+                try {
+                    info = JSON.parse(item.notes);
+                } catch(e) {
+                    console.error("JSON解析に失敗したため初期値を使用します:", e);
+                }
+            }
 
-            // 時間帯の古いデータ（文字）を配列に変換してあげる優しさ
+            // 時間帯データが文字列だった場合の変換
             let timeArray = [];
             if (Array.isArray(info.time)) {
                 timeArray = info.time;
             } else if (typeof info.time === 'string') {
-                timeArray = info.time.split(',');
+                timeArray = info.time ? info.time.split(',') : ["昼"];
+            } else {
+                timeArray = ["昼"];
             }
 
             return {
                 id: item.id,
-                name: item.name,
+                name: item.name || "無名のお店",
                 area: info.area || "南部",
                 time: timeArray,
-                genre: info.genre || "ごはん",
+                genre: info.genre || item.category || "ごはん",
                 status: info.status || "行きたい",
                 isChain: !!info.isChain
             };
@@ -333,7 +339,7 @@
             
             const statusLabel = shop.status === "行った" ? "💖行った" : "📌行きたい";
             const chainBadge = shop.isChain ? " <span style='color:#f59e0b;'>[チェーン]</span>" : "";
-            const timeLabel = shop.time.join('・');
+            const timeLabel = Array.isArray(shop.time) ? shop.time.join('・') : "昼";
             
             item.innerHTML = `
                 <div class="shop-info">
@@ -351,7 +357,6 @@
         });
     }
 
-    // データを保存
     async function addShop() {
         const nameInput = document.getElementById("new-shop-name");
         const name = nameInput.value.trim();
@@ -360,7 +365,6 @@
         const genre = document.getElementById("new-shop-genre").value;
         const status = document.getElementById("new-shop-status").value;
 
-        // 選択された時間帯を配列で取得
         const selectedTimes = [];
         if (document.getElementById("add-time-morning").checked) selectedTimes.push("朝");
         if (document.getElementById("add-time-lunch").checked) selectedTimes.push("昼");
@@ -377,7 +381,6 @@
 
         if (error) {
             alert("データの保存に失敗しました…");
-            console.error(error);
             return;
         }
 
@@ -386,7 +389,6 @@
         alert(`「${name}」を追加したよ！`);
     }
 
-    // ステータス更新
     async function toggleStatus(index) {
         const shop = gourmetDatabase[index];
         const newStatus = shop.status === "行った" ? "行きたい" : "行った";
@@ -404,10 +406,9 @@
             .update({ notes: updatedData })
             .eq('id', shop.id);
 
-        if (error) console.error("更新エラー:", error);
+        if (error) console.error(error);
     }
 
-    // 削除処理
     async function deleteShop(index) {
         const shop = gourmetDatabase[index];
         if (confirm(`「${shop.name}」を削除してもいい？`)) {
@@ -416,18 +417,16 @@
                 .delete()
                 .eq('id', shop.id);
 
-            if (error) console.error("削除エラー:", error);
+            if (error) console.error(error);
         }
     }
 
-    // ルーレットを回す
     function spinRoulette() {
         const isChainMode = document.getElementById("chain-mode-toggle").checked;
         const areaFilter = document.getElementById("area-select").value;
         const genreFilter = document.getElementById("genre-select").value;
         const statusFilter = document.getElementById("status-select").value;
 
-        // 条件絞り込みの時間帯チェックボックスを取得
         const activeFilterTimes = [];
         if (document.getElementById("filter-time-morning").checked) activeFilterTimes.push("朝");
         if (document.getElementById("filter-time-lunch").checked) activeFilterTimes.push("昼");
@@ -440,10 +439,7 @@
                 const matchArea = (areaFilter === "すべて" || item.area === areaFilter);
                 const matchGenre = (genreFilter === "すべて" || item.genre === genreFilter);
                 const matchStatus = (statusFilter === "すべて" || item.status === statusFilter);
-                
-                // お店の時間帯（配列）のどれか1つでも、チェックされた絞り込み時間帯に含まれているか
                 const matchTime = item.time.some(t => activeFilterTimes.includes(t));
-
                 return matchArea && matchTime && matchGenre && matchStatus && !item.isChain;
             }
         });
@@ -469,7 +465,6 @@
         }, 70);
     }
 
-    // アプリ起動
     initApp();
 </script>
 
