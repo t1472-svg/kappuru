@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ふたりのホーム</title>
+    <style>
+        /* パステルカラーのふんわりグラデーション */
+        body {
+            font-family: "Hiragino Maru Gothic ProN", "Noto Sans JP", "Ubuntu", sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #f0f9ff 0%, #fff1f2 100%);
+            background-attachment: fixed;
+            color: #5c677d;
+            padding: 20px 10px;
+            margin: 0;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(255, 183, 202, 0.15);
+            border: 2px solid #ffffff;
+            box-sizing: border-box;
+        }
+        
+        /* プロフィールアイコン風の並び */
+        .pair-profile {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #ffb7ca;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .heart {
+            font-size: 24px;
+            color: #ff9ebb;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        h1 { 
+            font-size: 20px; 
+            color: #ff9ebb; 
+            margin: 10px 0 25px 0;
+            text-shadow: 1px 1px 0px #fff;
+        }
+        
+        /* メインメニュー（ボタンたち） */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* メニューボタンの共通スタイル */
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.1s, box-shadow 0.1s;
+            border: 1px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .menu-btn:active {
+            transform: scale(0.98);
+        }
+        .menu-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        .menu-text {
+            text-align: left;
+            flex-grow: 1;
+        }
+        .menu-text span {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .arrow {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        /* 各ボタンのパステルカラー設定 */
+        .btn-roulette {
+            background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+            color: #e11d48;
+            border-color: #ffe4e6;
+        }
+        /* まだ作っていない機能（準備中風のデザイン） */
+        .btn-disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #f1f5f9;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ２人のアイコンエリア -->
+    <div class="pair-profile">
+        <div class="avatar">👦🏻</div>
+        <div class="heart">❤️</div>
+        <div class="avatar">👧🏻</div>
+    </div>
+    
+    <h1>ふたりのまいにちアプリ</h1>
+    
+    <!-- メニュー一覧 -->
+    <div class="menu-list">
+        
+        <!-- 🍽 ごはんルーレット（今回作ったものに飛びます） -->
+        <a href="roulette.html" class="menu-btn btn-roulette">
+            <span class="menu-icon">🍽️</span>
+            <div class="menu-text">
+                ごはんルーレット
+                <span>今日なに食べる？迷ったらコレ！</span>
+            </div>
+            <span class="arrow">▶</span>
+        </a>
+        
+        <!-- 🗺 デートマップ（将来用） -->
+        <div class="menu-btn btn-disabled">
+            <span class="menu-icon">🗺️</span>
+            <div class="menu-text">
+                おきなわ思い出マップ
+                <span>行った場所・行きたい場所の記録（準備中）</span>
+            </div>
+        </div>
+        
+        <!-- ✍️ 二人の交換日記（将来用） -->
+        <div class="menu-btn btn-disabled">
+            <span class="menu-icon">✍️</span>
+            <div class="menu-text">
+                ふたり日記
+                <span>日々のちょっとした思い出ブログ（準備中）</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
