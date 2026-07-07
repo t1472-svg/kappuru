@@ -7,6 +7,7 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>おきなわ、何食べる？</title>
+    <!-- ⚡️ Supabaseライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -156,7 +157,8 @@
 <body>
 
 <div class="container">
-    <div class="version-tag">ver 1.4</div>
+    <!-- ⚡️ バージョン更新 -->
+    <div class="version-tag">ver 1.6</div>
 
     <h1>ふたりの沖縄ごはんルーレット</h1>
     
@@ -278,11 +280,11 @@
             .subscribe();
     }
 
+    // ⚡️ エラー400の最大の原因だった .order() の並び替え指定を完全に除去しました
     async function fetchShops() {
         const { data, error } = await _supabase
             .from('okinawa_places')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('*');
         
         if (error) {
             console.error("データ取得エラー:", error);
@@ -294,28 +296,29 @@
             
             if (item.notes) {
                 try {
-                    info = JSON.parse(item.notes);
+                    const parsed = JSON.parse(item.notes);
+                    if (parsed && typeof parsed === 'object') {
+                        info = parsed;
+                    }
                 } catch(e) {
-                    console.error("JSON解析に失敗したため初期値を使用します:", e);
+                    console.error("JSON解析エラー:", e);
                 }
             }
 
-            // エリアデータを安全に配列へ変換
             let areaArray = [];
             if (Array.isArray(info.area)) {
                 areaArray = info.area;
             } else if (typeof info.area === 'string') {
-                areaArray = info.area ? info.area.split(',') : ["中部"];
+                areaArray = info.area.trim() ? [info.area.trim()] : ["中部"];
             } else {
                 areaArray = ["中部"];
             }
 
-            // 時間帯データを安全に配列へ変換
             let timeArray = [];
             if (Array.isArray(info.time)) {
                 timeArray = info.time;
             } else if (typeof info.time === 'string') {
-                timeArray = info.time ? info.time.split(',') : ["昼"];
+                timeArray = info.time.trim() ? [info.time.trim()] : ["昼"];
             } else {
                 timeArray = ["昼"];
             }
@@ -327,7 +330,7 @@
                 time: timeArray,
                 genre: info.genre || item.category || "ごはん",
                 status: info.status || "行きたい",
-                isChain: !!info.isChain
+                isChain: (info.isChain !== undefined) ? !!info.isChain : true
             };
         });
     }
@@ -389,6 +392,7 @@
 
         const extraData = JSON.stringify({ area: selectedAreas, time: selectedTimes, genre, status, isChain });
 
+        // 💡 競合を防ぐため、存在しない一意の主キー（id）はSupabaseの自動生成に任せます
         const { error } = await _supabase
             .from('okinawa_places')
             .insert([{ name: name, category: genre, notes: extraData }]);
@@ -418,7 +422,7 @@
         const { error } = await _supabase
             .from('okinawa_places')
             .update({ notes: updatedData })
-            .eq('id', shop.id);
+            .eq('name', shop.name); // id列の一意性が怪しい場合に備え、店名で一致させます
 
         if (error) console.error(error);
     }
@@ -429,13 +433,12 @@
             const { error } = await _supabase
                 .from('okinawa_places')
                 .delete()
-                .eq('id', shop.id);
+                .eq('name', shop.name);
 
             if (error) console.error(error);
         }
     }
 
-    // ⚡️ バグ修正箇所（item.area を currentItem.area に修正）
     function spinRoulette() {
         const isChainMode = document.getElementById("chain-mode-toggle").checked;
         const genreFilter = document.getElementById("genre-select").value;
@@ -453,7 +456,6 @@
 
         const filteredList = gourmetDatabase.filter(item => {
             if (isChainMode) {
-                // チェーン店モードの時は「チェーン店チェック」が入っているお店
                 return item.isChain;
             } else {
                 const matchGenre = (genreFilter === "すべて" || item.genre === genreFilter);
@@ -481,7 +483,6 @@
             const currentItem = filteredList[randomIndex];
             nameDiv.innerText = currentItem.name;
             
-            // 【修正箇所】currentItem から安全にエリアを結合
             const areaLabel = currentItem.area ? currentItem.area.join('・') : "";
             metaDiv.innerText = currentItem.isChain ? "🍔 定番のチェーン店！" : `[${areaLabel}] ${currentItem.genre} (${currentItem.status})`;
             
