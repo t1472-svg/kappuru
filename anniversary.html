@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ひろと＆りさこの記念日ダッシュボード</title>
+    <style>
+        body {
+            font-family: "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #fff1f2 0%, #f0f9ff 100%);
+            background-attachment: fixed;
+            color: #5c677d;
+            padding: 30px 10px;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(255, 183, 202, 0.2);
+            border: 2px solid #ffffff;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 20px;
+            color: #ff9ebb;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 0px #fff;
+        }
+        .ages-display {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        /* 🎉 お祝いメッセージエリア */
+        .celebrate-banner {
+            display: none;
+            background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+            color: #854d0e;
+            padding: 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(254, 240, 138, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .counter-box {
+            background: linear-gradient(135deg, #fff5f7 0%, #f0f7ff 100%);
+            border-radius: 24px;
+            padding: 30px 15px;
+            margin-bottom: 25px;
+            border: 2px dashed #ffffff;
+        }
+        .counter-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .big-timer {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ff9ebb;
+            line-height: 1.5;
+        }
+        .big-timer span {
+            font-size: 38px;
+            color: #ff6b8b;
+            margin: 0 4px;
+        }
+        .sub-timer {
+            font-size: 15px;
+            color: #7dd3fc;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #ff9ebb;
+            text-align: left;
+            margin: 25px 0 12px 5px;
+            padding-left: 6px;
+            border-left: 4px solid #ff9ebb;
+        }
+        .event-list {
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+            border: 1px solid #f1f5f9;
+        }
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 10px;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 14px;
+        }
+        .event-item:last-child { border-bottom: none; }
+        .event-name { font-weight: bold; color: #64748b; }
+        .event-days { font-weight: bold; color: #ff6b8b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📅 ひろと ＆ りさこの記念日ダッシュボード</h1>
+    <div class="ages-display" id="ages-zone">計算中...</div>
+
+    <div class="celebrate-banner" id="celebrate-zone"></div>
+
+    <div class="counter-box">
+        <div class="counter-title">✨ 今日でふたりが付き合ってから ✨</div>
+        <div class="big-timer" id="main-counter">計算中...</div>
+        <div class="sub-timer" id="sub-counter"></div>
+    </div>
+
+    <div class="section-title">🎉 これからのお祝い予定</div>
+    <div class="event-list" id="future-events"></div>
+</div>
+
+<script>
+    // 💡 お二人の確定データを完全に埋め込みました！
+    const ANNIVERSARY_DATE_STR = "2023-06-14"; // 付き合った記念日
+    const HIROTO_BIRTHDAY_STR = "2003-02-03";   // ひろとさんの誕生日
+    const RISAKO_BIRTHDAY_STR = "2005-03-11";   // りさこさんの誕生日（更新完了！）
+
+    window.onload = function() {
+        updateAll();
+    };
+
+    // 年齢を誕生日から正確に計算する関数
+    function getAge(birthdayStr, today) {
+        const birthDate = new Date(birthdayStr);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    function updateAll() {
+        const startDate = new Date(ANNIVERSARY_DATE_STR);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // --- 0. お互いの現在の年齢を表示 ---
+        const hirotoAge = getAge(HIROTO_BIRTHDAY_STR, today);
+        const risakoAge = getAge(RISAKO_BIRTHDAY_STR, today);
+        document.getElementById("ages-zone").innerText = `ひろと(${hirotoAge}歳) ＆ りさこ(${risakoAge}歳)`;
+
+        // --- 1. 「何年何ヶ月何日」計算 ---
+        let years = today.getFullYear() - startDate.getFullYear();
+        let months = today.getMonth() - startDate.getMonth();
+        let days = today.getDate() - startDate.getDate();
+
+        if (days < 0) {
+            months--;
+            const prevMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            days += prevMonthEnd;
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        const diffTime = today - startDate;
+        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        let resultHtml = "";
+        if (years > 0) resultHtml += `<span>${years}</span>年`;
+        if (months > 0 || years > 0) resultHtml += `<span>${months}</span>ヶ月`;
+        resultHtml += `<span>${days}</span>日`;
+
+        document.getElementById("main-counter").innerHTML = resultHtml;
+        document.getElementById("sub-counter").innerText = `🌺 通算 ${totalDays} 日目 🌺`;
+
+        // --- 2. スケジュール＆本日お祝い判定 ---
+        const events = [];
+        let todayCelebrateMsg = [];
+
+        // 通算キリ番のチェック
+        for (let i = 100; i <= 5000; i += 100) {
+            const targetDate = new Date(startDate);
+            targetDate.setDate(startDate.getDate() + i - 1);
+            
+            const remain = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+            if (remain === 0) todayCelebrateMsg.push(`🎉 本日、通算 ${i} 日目の記念日です！おめでとう！ 🎉`);
+            if (remain >= 0) {
+                events.push({ name: `通算 ${i} 日記念日`, date: targetDate, remain: remain });
+            }
+        }
+
+        // 毎年の付き合った記念日チェック
+        const nextAnnivYear = today.getMonth() > startDate.getMonth() || (today.getMonth() === startDate.getMonth() && today.getDate() > startDate.getDate()) 
+            ? today.getFullYear() + 1 
+            : today.getFullYear();
+        const nextAnnivDate = new Date(nextAnnivYear, startDate.getMonth(), startDate.getDate());
+        const annivRemain = Math.ceil((nextAnnivDate - today) / (1000 * 60 * 60 * 24));
+        const annivCount = nextAnnivYear - startDate.getFullYear();
+        
+        if (annivRemain === 0) todayCelebrateMsg.push(`🎂 本日は付き合って ${annivCount} 周年の記念日です！！ Happy Anniversary!! 🎂`);
+        events.push({ name: `💝 付き合って ${annivCount}周年記念日`, date: nextAnnivDate, remain: annivRemain });
+
+        // 誕生日チェック用の関数
+        function checkBirthday(birthStr, name) {
+            if (!birthStr) return;
+            const bDate = new Date(birthStr);
+            const nextBYear = today.getMonth() > bDate.getMonth() || (today.getMonth() === bDate.getMonth() && today.getDate() > bDate.getDate())
+                ? today.getFullYear() + 1
+                : today.getFullYear();
+            const nextBDate = new Date(nextBYear, bDate.getMonth(), bDate.getDate());
+            const bRemain = Math.ceil((nextBDate - today) / (1000 * 60 * 60 * 24));
+            
+            if (bRemain === 0) todayCelebrateMsg.push(`🎁 本日は ${name} のお誕生日です！おめでとう！！！ 🎁`);
+            events.push({ name: `🎂 ${name} の誕生日`, date: nextBDate, remain: bRemain });
+        }
+
+        checkBirthday(HIROTO_BIRTHDAY_STR, "ひろと");
+        checkBirthday(RISAKO_BIRTHDAY_STR, "りさこ");
+
+        // --- 3. 本日お祝いバナーの表示 ---
+        const banner = document.getElementById("celebrate-zone");
+        if (todayCelebrateMsg.length > 0) {
+            banner.innerHTML = todayCelebrateMsg.join("<br>");
+            banner.style.display = "block";
+        } else {
+            banner.style.display = "none";
+        }
+
+        // --- 4. スケジュールリストを表示 ---
+        events.sort((a, b) => a.remain - b.remain);
+        
+        const listContainer = document.getElementById("future-events");
+        listContainer.innerHTML = "";
+        
+        // 直近の予定を5件表示
+        events.slice(0, 5).forEach(ev => {
+            const item = document.createElement("div");
+            item.className = "event-item";
+            
+            let daysText = "";
+            if (ev.remain === 0) {
+                daysText = `<span class="event-days">🎉 本日！</span>`;
+            } else {
+                daysText = `あと <span class="event-days">${ev.remain}</span> 日`;
+            }
+
+            const dateLabel = `${ev.date.getMonth() + 1}/${ev.date.getDate()}`;
+            item.innerHTML = `
+                <div class="event-name">${ev.name} <small style="color:#cbd5e1;">(${dateLabel})</small></div>
+                <div>${daysText}</div>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+</script>
+
+</body>
+</html>
